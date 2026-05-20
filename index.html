@@ -708,34 +708,60 @@
 
         // Algoritmo Fisher-Yates para embaralhamento das perguntas de forma robusta e consistente
         function shuffleQuestions() {
-            const body = document.body;
-            const questions = Array.from(document.querySelectorAll('.question-slide'));
-            
-            for (let i = questions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [questions[i], questions[j]] = [questions[j], questions[i]];
-            }
-            
-            const slide9 = document.getElementById('slide9');
-            
-            questions.forEach((q, index) => {
-                body.insertBefore(q, slide9);
-                
-                const slideNum = index + 3;
-                q.id = 'slide' + slideNum;
-                
-                const progressSpan = q.querySelector('.slide-progress');
-                if (progressSpan) {
-                    progressSpan.innerText = `QUESTÃO ${index + 1} DE 6`;
-                }
+    const body = document.body;
+    const questions = Array.from(document.querySelectorAll('.question-slide'));
 
-                const titleEl = q.querySelector('h2');
-                if (titleEl) {
-                    titleEl.innerHTML = titleEl.innerHTML.replace(/^Q\d+/, `Q${index + 1}`);
-                }
-            });
+    // Fisher-Yates
+    for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+
+    const slide9 = document.getElementById('slide9');
+
+    questions.forEach((q, index) => {
+        body.insertBefore(q, slide9);
+
+        const slideNum = index + 3;
+        q.id = 'slide' + slideNum;
+
+        const progressSpan = q.querySelector('.slide-progress');
+        if (progressSpan) {
+            progressSpan.innerText = `QUESTÃO ${index + 1} DE 6`;
         }
 
+        const titleEl = q.querySelector('h2');
+        if (titleEl) {
+            titleEl.innerHTML = titleEl.innerHTML.replace(/^Q\d+/, `Q${index + 1}`);
+        }
+    });
+
+    // Corrige o botão final após o embaralhamento
+    questions.forEach((q, index) => {
+        const qkey = q.dataset.qkey;
+        const btn = document.getElementById(`${qkey}-next`);
+
+        if (!btn) return;
+
+        const isLastQuestion = index === questions.length - 1;
+
+        if (isLastQuestion) {
+            btn.innerHTML =
+                'Concluir Desafio <i class="fa-solid fa-square-poll-vertical ml-2"></i>';
+            btn.onclick = calculateResults;
+
+            btn.classList.remove('bg-white');
+            btn.classList.add('bg-brandCyan');
+        } else {
+            btn.innerHTML =
+                'Avançar <i class="fa-solid fa-arrow-right ml-2"></i>';
+            btn.onclick = nextSlide;
+
+            btn.classList.remove('bg-brandCyan');
+            btn.classList.add('bg-white');
+        }
+    });
+}
         // Exibe o slide no índice especificado
         function showSlide(index) {
             document.querySelectorAll('.slide-container').forEach(slide => {
