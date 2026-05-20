@@ -1,2 +1,896 @@
-# biancafrmartins.github.io
-Quiz OAB - PUC/PR
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: IA &amp; Direito - PUCPR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fontes profissionais e modernas -->
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;700;800&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandDark: '#030712',
+                        brandNav: '#0b1329',
+                        brandCyan: '#00f0ff',
+                        brandBlueLight: '#38bdf8',
+                        brandBlueDark: '#1e3a8a',
+                    },
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            user-select: none;
+        }
+
+        body {
+            background-color: #030712;
+            color: #ffffff;
+            font-family: 'Urbanist', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Container Proporcional de Apresentação (Estilo Slide Deck) */
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 680px;
+            background-color: #0b1329;
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 24px;
+            padding: 48px;
+            position: relative;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 240, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .slide-container.active {
+            display: flex;
+        }
+
+        /* Efeitos Visuais de Fundo (Vibe Cyber/Tech Blue) */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            right: -150px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.06) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            bottom: -150px;
+            left: -150px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slide-container > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Botões de Alternativas Clássicos Tech */
+        .alternative-btn {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 16px;
+            color: #cbd5e1;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .alternative-btn:hover:not(.disabled) {
+            background-color: rgba(0, 240, 255, 0.05);
+            border-color: #00f0ff;
+            transform: translateX(4px);
+            color: #ffffff;
+        }
+
+        .alternative-btn.correct {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+        }
+
+        .alternative-btn.incorrect {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+        }
+
+        .alternative-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .alternative-indicator {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.06);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            flex-shrink: 0;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .correct .alternative-indicator {
+            background-color: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
+        }
+
+        .incorrect .alternative-indicator {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+        }
+
+        /* Animações de Transição */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- SLIDE 1: Capa Oficial do Evento na PUCPR -->
+    <div class="slide-container active" id="slide1">
+        <div class="flex flex-col items-center justify-center text-center flex-grow h-full">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brandCyan/30 bg-brandCyan/5 text-brandCyan text-xs uppercase tracking-wider mb-6 font-display font-bold">
+                <i class="fa-solid fa-graduation-cap"></i> PUCPR • Práticas Jurídicas
+            </div>
+            
+            <h1 class="font-display font-bold leading-tight text-white mb-6 text-4xl md:text-5xl lg:text-6xl max-w-4xl">
+                Desafio <span class="text-brandCyan">IA &amp; Advocacia</span>
+            </h1>
+            
+            <p class="text-slate-300 text-lg md:text-xl max-w-2xl mb-8 leading-relaxed font-sans">
+                Teste seus conhecimentos práticos, técnicos e éticos sobre o uso de Inteligência Artificial Generativa com base nas regras mais recentes da OAB.
+            </p>
+            
+            <button class="px-8 py-4 bg-white text-brandDark font-display font-bold text-lg rounded-full hover:bg-brandCyan hover:text-brandDark transition duration-300 shadow-lg shadow-brandCyan/10 hover:shadow-brandCyan/20 flex items-center gap-3" onclick="nextSlide()">
+                Iniciar Quiz <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="flex flex-col md:flex-row justify-between items-center text-slate-400 text-xs border-t border-white/5 pt-6 mt-8 w-full font-display">
+            <div>4ª Edição da Feira Oportunidades de Práticas Jurídicas da PUC/PR</div>
+            <div class="mt-2 md:mt-0 opacity-70">Escola de Direito &amp; Tecnologia</div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: Como Funciona o Desafio -->
+    <div class="slide-container" id="slide2">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-2xl md:text-3xl text-white">Como Funciona o Desafio</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-auto">
+            <div class="bg-white/[0.02] border border-white/10 p-8 rounded-2xl hover:border-brandCyan/40 transition duration-300">
+                <div class="w-12 h-12 rounded-xl bg-brandCyan/10 border border-brandCyan/20 flex items-center justify-center text-brandCyan text-xl mb-6">
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+                <h3 class="font-display font-bold text-xl text-white mb-3">Questões Aleatórias</h3>
+                <p class="text-slate-400 text-base leading-relaxed">
+                    A ordem das perguntas é embaralhada automaticamente a cada nova rodada. Desafie seus amigos e descubra quem realmente domina as diretrizes tecnológicas!
+                </p>
+            </div>
+            
+            <div class="bg-white/[0.02] border border-white/10 p-8 rounded-2xl hover:border-brandCyan/40 transition duration-300">
+                <div class="w-12 h-12 rounded-xl bg-brandCyan/10 border border-brandCyan/20 flex items-center justify-center text-brandCyan text-xl mb-6">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <h3 class="font-display font-bold text-xl text-white mb-3">Feedback Educativo</h3>
+                <p class="text-slate-400 text-base leading-relaxed">
+                    Para garantir que você aprenda durante a feira, cada pergunta trará uma explicação técnica detalhada assim que for respondida, sem dar dicas antes da sua escolha.
+                </p>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Voltar
+            </button>
+            <span class="text-slate-400 font-display text-xs tracking-wider uppercase">Fase de Preparação</span>
+            <button class="px-6 py-2.5 rounded-full bg-brandCyan text-brandDark font-display font-bold text-sm hover:bg-white transition" onclick="nextSlide()">
+                Entendi, Vamos Lá! <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    
+    <!-- QUESTÃO 1 (Prompt Injection) -->
+    <div class="slide-container question-slide" data-qkey="q1">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-lg md:text-xl text-slate-400 uppercase tracking-widest">Q1 — Segurança em IA</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h3 class="font-display font-bold text-xl md:text-2xl text-white mb-6">O que é, tecnicamente, a prompt injection?</h3>
+                <div class="flex flex-col gap-3" id="q1-container">
+                    <div class="alternative-btn" onclick="checkAnswer('q1', 'A', this)"><span class="alternative-indicator">A</span> Uma técnica exclusivamente maliciosa de ataque a sistemas de IA</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q1', 'B', this)"><span class="alternative-indicator">B</span> A inserção de instruções capazes de influenciar o comportamento de sistemas de IA durante o processamento de texto</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q1', 'C', this)"><span class="alternative-indicator">C</span> Um método automatizado de pesquisa jurisprudencial</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q1', 'D', this)"><span class="alternative-indicator">D</span> Uma ferramenta de formatação e revisão de documentos jurídicos</div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <!-- Placeholder / Feedback Box -->
+                <div id="q1-explanation" class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl h-full flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[250px]">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-shield-halved text-5xl text-brandCyan/20 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-sans text-sm">Responda à questão para ver a análise e a justificativa técnica.</p>
+                    </div>
+                    <div class="feedback-content hidden text-left w-full fade-in">
+                        <h4 class="font-display font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <span class="feedback-icon-placeholder"></span> Análise Prática
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            <strong>Por que a alternativa B está correta?</strong><br>
+                            A injeção de prompt ocorre quando dados externos contêm instruções que fazem o modelo "esquecer" suas diretrizes iniciais. É crucial compreender esse comportamento para criar fluxos de trabalho jurídicos blindados e evitar vazamentos ou desvios em sistemas internos.
+                        </p>
+                        <span class="text-xs text-brandCyan font-display font-bold uppercase tracking-wider bg-brandCyan/5 px-3 py-1 rounded-md border border-brandCyan/10">Engenharia de Prompt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="slide-progress text-slate-400 font-display text-xs tracking-wider uppercase">Carregando...</span>
+            <button class="px-6 py-2.5 rounded-full bg-white text-brandDark font-display font-bold text-sm hover:bg-brandCyan hover:text-brandDark transition disabled:opacity-35 disabled:cursor-not-allowed" id="q1-next" onclick="nextSlide()" disabled>
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QUESTÃO 2 (Prompt Injection Ética) -->
+    <div class="slide-container question-slide" data-qkey="q2">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-lg md:text-xl text-slate-400 uppercase tracking-widest">Q2 — Prática Diária</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h3 class="font-display font-bold text-xl md:text-2xl text-white mb-6">Em relação à técnica de engenharia ou injeção de prompts estruturados, é correto afirmar que:</h3>
+                <div class="flex flex-col gap-3" id="q2-container">
+                    <div class="alternative-btn" onclick="checkAnswer('q2', 'A', this)"><span class="alternative-indicator">A</span> É, por natureza, um ilícito que o advogado deve evitar em qualquer circunstância</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q2', 'B', this)"><span class="alternative-indicator">B</span> É uma técnica neutra — sua qualificação ética depende exclusivamente da finalidade a que se destina</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q2', 'C', this)"><span class="alternative-indicator">C</span> É uma novidade técnica recente, sem uso legítimo reconhecido</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q2', 'D', this)"><span class="alternative-indicator">D</span> Seu uso é restrito a empresas de tecnologia, sendo vedado a profissionais do direito</div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <div id="q2-explanation" class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl h-full flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[250px]">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-terminal text-5xl text-brandCyan/20 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-sans text-sm">Responda à questão para ver a análise e a justificativa técnica.</p>
+                    </div>
+                    <div class="feedback-content hidden text-left w-full fade-in">
+                        <h4 class="font-display font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <span class="feedback-icon-placeholder"></span> Análise Prática
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            <strong>Por que a alternativa B está correta?</strong><br>
+                            A engenharia e formatação de prompts refinados e contextuais é uma habilidade legítima do advogado. Trata-se de uma tecnologia neutra, cujo uso estratégico otimiza a redação de contratos e resumos. A ética está associada à forma como o profissional revisa e valida as respostas.
+                        </p>
+                        <span class="text-xs text-brandCyan font-display font-bold uppercase tracking-wider bg-brandCyan/5 px-3 py-1 rounded-md border border-brandCyan/10">Habilidades do Futuro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="slide-progress text-slate-400 font-display text-xs tracking-wider uppercase">Carregando...</span>
+            <button class="px-6 py-2.5 rounded-full bg-white text-brandDark font-display font-bold text-sm hover:bg-brandCyan hover:text-brandDark transition disabled:opacity-35 disabled:cursor-not-allowed" id="q2-next" onclick="nextSlide()" disabled>
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QUESTÃO 3 (Supervisão Humana Regulatório) -->
+    <div class="slide-container question-slide" data-qkey="q3">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-lg md:text-xl text-slate-400 uppercase tracking-widest">Q3 — Regulamentação</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h3 class="font-display font-bold text-xl md:text-2xl text-white mb-6">Segundo o item 3.1 da Recomendação 01/2024 da OAB Federal, a supervisão humana no uso de IA pelo advogado é:</h3>
+                <div class="flex flex-col gap-3" id="q3-container">
+                    <div class="alternative-btn" onclick="checkAnswer('q3', 'A', this)"><span class="alternative-indicator">A</span> Opcional quando a IA utilizada for de alta confiabilidade e reputação</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q3', 'B', this)"><span class="alternative-indicator">B</span> Dispensável em tarefas administrativas de baixo risco jurídico</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q3', 'C', this)"><span class="alternative-indicator">C</span> Indispensável em todas as atividades jurídicas mediadas por IA</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q3', 'D', this)"><span class="alternative-indicator">D</span> Exigida apenas em processos criminais e trabalhistas</div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <div id="q3-explanation" class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl h-full flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[250px]">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-gavel text-5xl text-brandCyan/20 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-sans text-sm">Responda à questão para ver a análise e a justificativa técnica.</p>
+                    </div>
+                    <div class="feedback-content hidden text-left w-full fade-in">
+                        <h4 class="font-display font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <span class="feedback-icon-placeholder"></span> Análise Prática
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            <strong>Por que a alternativa C está correta?</strong><br>
+                            A OAB estabelece de forma rigorosa que a inteligência artificial só deve ser utilizada como apoio. A revisão humana cuidadosa é obrigatória e intransferível em qualquer atividade mediada por IA para resguardar a qualidade e a veracidade da atuação profissional.
+                        </p>
+                        <span class="text-xs text-brandCyan font-display font-bold uppercase tracking-wider bg-brandCyan/5 px-3 py-1 rounded-md border border-brandCyan/10">Recomendação 01/2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="slide-progress text-slate-400 font-display text-xs tracking-wider uppercase">Carregando...</span>
+            <button class="px-6 py-2.5 rounded-full bg-white text-brandDark font-display font-bold text-sm hover:bg-brandCyan hover:text-brandDark transition disabled:opacity-35 disabled:cursor-not-allowed" id="q3-next" onclick="nextSlide()" disabled>
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QUESTÃO 4 (Responsabilidade Técnica) -->
+    <div class="slide-container question-slide" data-qkey="q4">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-lg md:text-xl text-slate-400 uppercase tracking-widest">Q4 — Ética Geral</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h3 class="font-display font-bold text-xl md:text-2xl text-white mb-6">Um advogado usa IA para redigir uma petição que contém erro grave, causando prejuízo ao cliente. A responsabilidade técnica recai sobre:</h3>
+                <div class="flex flex-col gap-3" id="q4-container">
+                    <div class="alternative-btn" onclick="checkAnswer('q4', 'A', this)"><span class="alternative-indicator">A</span> A empresa desenvolvedora da ferramenta de IA</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q4', 'B', this)"><span class="alternative-indicator">B</span> O advogado, que tem o dever de revisar todo conteúdo gerado pela IA</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q4', 'C', this)"><span class="alternative-indicator">C</span> Ambos, de forma igualitária, por culpa concorrente</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q4', 'D', this)"><span class="alternative-indicator">D</span> O cliente, por ter autorizado expressamente o uso da ferramenta</div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <div id="q4-explanation" class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl h-full flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[250px]">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-user-tie text-5xl text-brandCyan/20 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-sans text-sm">Responda à questão para ver a análise e a justificativa técnica.</p>
+                    </div>
+                    <div class="feedback-content hidden text-left w-full fade-in">
+                        <h4 class="font-display font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <span class="feedback-icon-placeholder"></span> Análise Prática
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            <strong>Por que a alternativa B está correta?</strong><br>
+                            A responsabilidade civil e profissional é exclusiva do advogado regularmente inscrito. A IA atua apenas como processador de texto avançado e assistente. A ausência de revisão final que gera dano material ou processual caracteriza erro inescusável do operador do direito.
+                        </p>
+                        <span class="text-xs text-brandCyan font-display font-bold uppercase tracking-wider bg-brandCyan/5 px-3 py-1 rounded-md border border-brandCyan/10">Responsabilidade Civil</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="slide-progress text-slate-400 font-display text-xs tracking-wider uppercase">Carregando...</span>
+            <button class="px-6 py-2.5 rounded-full bg-white text-brandDark font-display font-bold text-sm hover:bg-brandCyan hover:text-brandDark transition disabled:opacity-35 disabled:cursor-not-allowed" id="q4-next" onclick="nextSlide()" disabled>
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QUESTÃO 5 (Alucinação) -->
+    <div class="slide-container question-slide" data-qkey="q5">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-lg md:text-xl text-slate-400 uppercase tracking-widest">Q5 — Riscos de Modelagem</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h3 class="font-display font-bold text-xl md:text-2xl text-white mb-6">O fenômeno em que sistemas de IA geram informações falsas (como julgados que nunca existiram) apresentadas com aparência de verdade é chamado de:</h3>
+                <div class="flex flex-col gap-3" id="q5-container">
+                    <div class="alternative-btn" onclick="checkAnswer('q5', 'A', this)"><span class="alternative-indicator">A</span> Deep fake jurídico</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q5', 'B', this)"><span class="alternative-indicator">B</span> Alucinação (hallucination)</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q5', 'C', this)"><span class="alternative-indicator">C</span> Prompt injection reverso</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q5', 'D', this)"><span class="alternative-indicator">D</span> Overfitting legal</div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <div id="q5-explanation" class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl h-full flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[250px]">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-brain text-5xl text-brandCyan/20 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-sans text-sm">Responda à questão para ver a análise e a justificativa técnica.</p>
+                    </div>
+                    <div class="feedback-content hidden text-left w-full fade-in">
+                        <h4 class="font-display font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <span class="feedback-icon-placeholder"></span> Análise Prática
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            <strong>Por que a alternativa B está correta?</strong><br>
+                            Alucinação é o termo computacional preciso para quando modelos estatísticos completam padrões gerando dados que parecem válidos e perfeitamente bem escritos, mas que são fictícios. No meio jurídico, já houve multas pesadas por advogados que apresentaram jurisprudências fantasmas geradas por IA.
+                        </p>
+                        <span class="text-xs text-brandCyan font-display font-bold uppercase tracking-wider bg-brandCyan/5 px-3 py-1 rounded-md border border-brandCyan/10">Mitigação de Erros</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="slide-progress text-slate-400 font-display text-xs tracking-wider uppercase">Carregando...</span>
+            <button class="px-6 py-2.5 rounded-full bg-white text-brandDark font-display font-bold text-sm hover:bg-brandCyan hover:text-brandDark transition disabled:opacity-35 disabled:cursor-not-allowed" id="q5-next" onclick="nextSlide()" disabled>
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QUESTÃO 6 (Sigilo e Práticas Recomendadas) -->
+    <div class="slide-container question-slide" data-qkey="q6">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-lg md:text-xl text-slate-400 uppercase tracking-widest">Q6 — Sigilo &amp; Práticas</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h3 class="font-display font-bold text-xl md:text-2xl text-white mb-6">Qual das práticas abaixo está em perfeita conformidade com o uso ético de IA na advocacia, segundo as diretrizes vigentes?</h3>
+                <div class="flex flex-col gap-3" id="q6-container">
+                    <div class="alternative-btn" onclick="checkAnswer('q6', 'A', this)"><span class="alternative-indicator">A</span> Enviar ao tribunal peças geradas por IA sem revisão em casos urgentes</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q6', 'B', this)"><span class="alternative-indicator">B</span> Usar IA como ferramenta de apoio, mantendo o advogado como responsável técnico pela peça</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q6', 'C', this)"><span class="alternative-indicator">C</span> Substituir a análise jurídica humana por IA em causas de baixa complexidade</div>
+                    <div class="alternative-btn" onclick="checkAnswer('q6', 'D', this)"><span class="alternative-indicator">D</span> Compartilhar dados do cliente com ferramentas de IA sem verificar a política de privacidade</div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-5 flex flex-col justify-center">
+                <div id="q6-explanation" class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl h-full flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[250px]">
+                    <div class="placeholder-content">
+                        <i class="fa-solid fa-user-shield text-5xl text-brandCyan/20 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-sans text-sm">Responda à questão para ver a análise e a justificativa técnica.</p>
+                    </div>
+                    <div class="feedback-content hidden text-left w-full fade-in">
+                        <h4 class="font-display font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <span class="feedback-icon-placeholder"></span> Análise Prática
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            <strong>Por que a alternativa B está correta?</strong><br>
+                            A IA deve funcionar apenas como copiloto de produtividade. Outro fator crucial é o sigilo: inserir nomes, CPFs ou dados processuais protegidos por segredo de justiça em modelos públicos de IA (como ChatGPT gratuito) sem termos robustos de privacidade representa violação ética grave ao Estatuto da Advocacia.
+                        </p>
+                        <span class="text-xs text-brandCyan font-display font-bold uppercase tracking-wider bg-brandCyan/5 px-3 py-1 rounded-md border border-brandCyan/10">Segurança de Informação</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="slide-progress text-slate-400 font-display text-xs tracking-wider uppercase">Carregando...</span>
+            <button class="px-6 py-2.5 rounded-full bg-brandCyan text-brandDark font-display font-bold text-sm hover:bg-white transition disabled:opacity-35 disabled:cursor-not-allowed" id="q6-next" onclick="calculateResults()" disabled>
+                Concluir Desafio <i class="fa-solid fa-square-poll-vertical ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    
+    <!-- SLIDE 9: Panorama de Mercado -->
+    <div class="slide-container" id="slide9">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-2xl md:text-3xl text-white">Panorama de Imprudência Digital</h2>
+        </div>
+        
+        <div class="flex flex-col justify-center flex-grow my-auto">
+            <p class="text-slate-300 text-base md:text-lg mb-8 leading-relaxed max-w-3xl">
+                O uso inadequado da tecnologia gera impactos operacionais reais. Um levantamento em eventos de inovação jurídica catalogou os maiores erros cometidos por profissionais na integração da IA:
+            </p>
+            
+            <div class="flex flex-col gap-6 w-full max-w-4xl">
+                <div>
+                    <div class="flex justify-between text-sm mb-2 font-display">
+                        <span class="text-slate-300 font-medium">Uso de Dados Sensíveis sem Proteção Contratual</span>
+                        <span class="text-brandCyan font-bold">68%</span>
+                    </div>
+                    <div class="h-3 w-full bg-white/[0.03] border border-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-brandCyan shadow-[0_0_12px_rgba(0,240,255,0.4)]" style="width: 68%;"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between text-sm mb-2 font-display">
+                        <span class="text-slate-300 font-medium">Inclusão de Jurisprudências Alucinadas</span>
+                        <span class="text-brandCyan font-bold">55%</span>
+                    </div>
+                    <div class="h-3 w-full bg-white/[0.03] border border-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-brandCyan shadow-[0_0_12px_rgba(0,240,255,0.4)]" style="width: 55%;"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between text-sm mb-2 font-display">
+                        <span class="text-slate-300 font-medium">Falta Absoluta de Revisão Humana</span>
+                        <span class="text-brandCyan font-bold">42%</span>
+                    </div>
+                    <div class="h-3 w-full bg-white/[0.03] border border-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-brandCyan shadow-[0_0_12px_rgba(0,240,255,0.4)]" style="width: 42%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="text-slate-400 font-display text-xs tracking-wider uppercase">Panorama Estatístico</span>
+            <button class="px-6 py-2.5 rounded-full bg-brandCyan text-brandDark font-display font-bold text-sm hover:bg-white transition" onclick="nextSlide()">
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: Pilares da OAB -->
+    <div class="slide-container" id="slide10">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-2xl md:text-3xl text-white">Pilares Fundamentais</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+            <div class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+                <div class="text-brandCyan text-xl mb-4"><i class="fa-solid fa-user-check"></i></div>
+                <h4 class="font-display font-bold text-lg text-white mb-2">Autoria Humana</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    O profissional do Direito é o único autor intelectual final e insubstituível. A IA atua apenas na condição de assessoria operacional.
+                </p>
+            </div>
+            
+            <div class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+                <div class="text-brandCyan text-xl mb-4"><i class="fa-solid fa-lock"></i></div>
+                <h4 class="font-display font-bold text-lg text-white mb-2">Sigilo Profissional</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Inclusão de fatos, segredos industriais ou documentos privados de clientes em plataformas abertas sem criptografia é estritamente proibida.
+                </p>
+            </div>
+            
+            <div class="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+                <div class="text-brandCyan text-xl mb-4"><i class="fa-solid fa-scale-balanced"></i></div>
+                <h4 class="font-display font-bold text-lg text-white mb-2">Uso Não-Massificado</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    A automatização completa de peticionamentos robotizados que desconsideram as especificidades do caso infringe as diretrizes do Tribunal de Ética.
+                </p>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="text-slate-400 font-display text-xs tracking-wider uppercase">Compliance Tecnológico</span>
+            <button class="px-6 py-2.5 rounded-full bg-brandCyan text-brandDark font-display font-bold text-sm hover:bg-white transition" onclick="nextSlide()">
+                Avançar <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: Citação de Encerramento -->
+    <div class="slide-container" id="slide11">
+        <div class="border-l-4 border-brandCyan pl-4 mb-6">
+            <h2 class="font-display font-bold text-2xl md:text-3xl text-white">Inovação Responsável</h2>
+        </div>
+        
+        <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto my-auto h-full">
+            <i class="fa-solid fa-quote-left text-brandCyan/10 text-7xl mb-4"></i>
+            <blockquote class="font-display font-bold text-2xl md:text-3xl text-white leading-relaxed mb-6 italic">
+                "A inteligência artificial não substituirá os advogados brilhantes e estratégicos. Mas os advogados que utilizarem a IA com discernimento técnico e ética inevitavelmente superarão aqueles que optarem por ignorá-la."
+            </blockquote>
+            <cite class="text-brandCyan font-display font-bold tracking-wider text-base uppercase not-italic">— Direito &amp; Tecnologia • PUC/PR</cite>
+        </div>
+        
+        <div class="flex justify-between items-center border-t border-white/5 pt-6 mt-8">
+            <button class="px-6 py-2.5 rounded-full border border-white/10 text-slate-300 text-sm hover:border-white/30 hover:text-white transition" onclick="prevSlide()">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+            </button>
+            <span class="text-slate-400 font-display text-xs tracking-wider uppercase">Visão de Carreira</span>
+            <button class="px-6 py-2.5 rounded-full bg-brandCyan text-brandDark font-display font-bold text-sm hover:bg-white transition" onclick="nextSlide()">
+                Ver Desempenho <i class="fa-solid fa-chart-simple ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: Tela de Resultado Final -->
+    <div class="slide-container" id="slide12">
+        <div class="flex flex-col items-center justify-center text-center flex-grow h-full max-w-2xl mx-auto">
+            <h2 class="font-display font-bold text-3xl md:text-4xl text-white mb-2">Desempenho no Quiz</h2>
+            <div class="text-brandCyan font-display font-extrabold text-7xl md:text-8xl mb-6 tracking-tight shadow-sm" id="final-score-display">0/6</div>
+            
+            <p class="text-white text-xl font-display font-bold mb-4" id="score-text">Processando resultados...</p>
+            <p class="text-slate-400 text-sm md:text-base leading-relaxed mb-8">
+                Utilize ferramentas tecnológicas sempre como apoio ao seu intelecto e garanta um futuro inovador pautado na ética e compliance jurídico.
+            </p>
+            
+            <button class="px-8 py-3.5 bg-white text-brandDark font-display font-bold rounded-full hover:bg-brandCyan hover:text-brandDark transition duration-300 flex items-center gap-2" onclick="resetQuiz()">
+                <i class="fa-solid fa-rotate"></i> Jogar Novamente (Nova Ordem)
+            </button>
+        </div>
+        
+        <div class="flex justify-between items-center text-slate-400 text-xs border-t border-white/5 pt-6 mt-8 w-full font-display">
+            <div>4ª Edição da Feira Oportunidades de Práticas Jurídicas da PUC/PR</div>
+            <div class="opacity-70">Escola de Direito</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 1;
+        const totalSlides = 12;
+        let score = 0;
+        
+        const correctAnswers = {
+            q1: 'B',
+            q2: 'B',
+            q3: 'C',
+            q4: 'B',
+            q5: 'B',
+            q6: 'B'
+        };
+
+        let userAnswers = {
+            q1: null,
+            q2: null,
+            q3: null,
+            q4: null,
+            q5: null,
+            q6: null
+        };
+
+        // Algoritmo Fisher-Yates para embaralhamento das perguntas de forma consistente
+        function shuffleQuestions() {
+            const body = document.body;
+            const questions = Array.from(document.querySelectorAll('.question-slide'));
+            
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+            
+            const slide9 = document.getElementById('slide9');
+            
+            questions.forEach((q, index) => {
+                body.insertBefore(q, slide9);
+                
+                const slideNum = index + 3;
+                q.id = 'slide' + slideNum;
+                
+                const progressSpan = q.querySelector('.slide-progress');
+                if (progressSpan) {
+                    progressSpan.innerText = `QUESTÃO ${index + 1} DE 6`;
+                }
+
+                const titleEl = q.querySelector('h2');
+                if (titleEl) {
+                    titleEl.innerHTML = titleEl.innerHTML.replace(/^Q\d+/, `Q${index + 1}`);
+                }
+            });
+        }
+
+        // Exibe o slide no índice especificado
+        function showSlide(index) {
+            document.querySelectorAll('.slide-container').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            const activeSlide = document.getElementById('slide' + index);
+            if (activeSlide) {
+                activeSlide.classList.add('active');
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 1) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Validação da alternativa escolhida e revelação do Painel de Explicação
+        function checkAnswer(questionKey, selectedOption, buttonElement) {
+            if (userAnswers[questionKey] !== null) return;
+
+            userAnswers[questionKey] = selectedOption;
+            const isCorrect = selectedOption === correctAnswers[questionKey];
+            
+            if (isCorrect) {
+                buttonElement.classList.add('correct');
+                score++;
+            } else {
+                buttonElement.classList.add('incorrect');
+                
+                const buttons = buttonElement.parentNode.querySelectorAll('.alternative-btn');
+                buttons.forEach(btn => {
+                    if (btn.innerText.trim().startsWith(correctAnswers[questionKey])) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            const siblingButtons = buttonElement.parentNode.querySelectorAll('.alternative-btn');
+            siblingButtons.forEach(btn => {
+                btn.classList.add('disabled');
+            });
+
+            // Ativa o painel explicativo dinamicamente
+            revealExplanation(questionKey, isCorrect);
+
+            const nextBtn = document.getElementById(questionKey + '-next');
+            if (nextBtn) {
+                nextBtn.disabled = false;
+            }
+        }
+
+        // Transiciona e exibe as justificativas após a submissão
+        function revealExplanation(questionKey, isCorrect) {
+            const expContainer = document.getElementById(`${questionKey}-explanation`);
+            if (!expContainer) return;
+
+            const placeholder = expContainer.querySelector('.placeholder-content');
+            const feedback = expContainer.querySelector('.feedback-content');
+            const iconPlaceholder = expContainer.querySelector('.feedback-icon-placeholder');
+
+            if (placeholder && feedback) {
+                placeholder.classList.add('hidden');
+                feedback.classList.remove('hidden');
+
+                if (isCorrect) {
+                    expContainer.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    expContainer.style.backgroundColor = 'rgba(16, 185, 129, 0.02)';
+                    if (iconPlaceholder) {
+                        iconPlaceholder.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+                    }
+                } else {
+                    expContainer.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                    expContainer.style.backgroundColor = 'rgba(239, 68, 68, 0.02)';
+                    if (iconPlaceholder) {
+                        iconPlaceholder.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500"></i>`;
+                    }
+                }
+            }
+        }
+
+        // Gera a tela de resultados
+        function calculateResults() {
+            document.getElementById('final-score-display').innerText = `${score}/6`;
+            
+            const textEl = document.getElementById('score-text');
+            if (score === 6) {
+                textEl.innerHTML = '🎯 <span class="text-brandCyan">Excelente!</span> Você dominou totalmente as boas práticas e regulamentações de IA!';
+            } else if (score >= 4) {
+                textEl.innerHTML = '⚖️ <span class="text-brandBlueLight">Muito bom!</span> Forte senso de governança digital e responsabilidade.';
+            } else {
+                textEl.innerHTML = '💡 <span class="text-red-400">Atenção!</span> A advocacia moderna com IA exige forte supervisão humana e cuidados éticos adicionais.';
+            }
+
+            nextSlide();
+        }
+
+        // Reseta o jogo e forças novos embaralhamentos para o próximo candidato
+        function resetQuiz() {
+            score = 0;
+            userAnswers = { q1: null, q2: null, q3: null, q4: null, q5: null, q6: null };
+            
+            document.querySelectorAll('.alternative-btn').forEach(btn => {
+                btn.className = 'alternative-btn';
+            });
+
+            // Reseta os boxes de explicação
+            document.querySelectorAll('[id$="-explanation"]').forEach(box => {
+                box.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                box.style.backgroundColor = 'rgba(255, 255, 255, 0.01)';
+                
+                const placeholder = box.querySelector('.placeholder-content');
+                const feedback = box.querySelector('.feedback-content');
+                if (placeholder && feedback) {
+                    placeholder.classList.remove('hidden');
+                    feedback.classList.add('hidden');
+                }
+            });
+
+            ['q1-next', 'q2-next', 'q3-next', 'q4-next', 'q5-next', 'q6-next'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = true;
+            });
+
+            shuffleQuestions();
+            currentSlideIndex = 1;
+            showSlide(currentSlideIndex);
+        }
+
+        // Navegação rápida usando o teclado de setas
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                const activeSlide = document.querySelector('.slide-container.active');
+                if (activeSlide && activeSlide.classList.contains('question-slide')) {
+                    const qkey = activeSlide.getAttribute('data-qkey');
+                    if (userAnswers[qkey] === null) return;
+                }
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            shuffleQuestions();
+        });
+    </script>
+</body>
+</html>
